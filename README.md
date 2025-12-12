@@ -6,8 +6,6 @@ The dashboard is deployed on Streamlit Cloud and can be accessed here:
 
 👉 https://aum-revenue-liquidity-planning-dashboard.streamlit.app/
 
-Use this hosted version for demos and grading. The local setup instructions below are mainly for development or offline experimentation.
-
 ## Project Overview
 
 This project simulates **Aurora Utensils Manufacturing (AUM)**, a mid-size stainless-steel utensils and kitchenware manufacturer, to build a comprehensive **forecasting and liquidity planning system**. We use a real utensil manufacturing sales dataset from Kaggle as Aurora's transaction history, supplemented with macroeconomic data from FRED and U.S. Census sources.
