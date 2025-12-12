@@ -1,5 +1,13 @@
 # Aurora Utensils Manufacturing (AUM) – Forecasting & Liquidity Planning
 
+## Live Demo
+
+The dashboard is deployed on Streamlit Cloud and can be accessed here:
+
+👉 https://aum-revenue-liquidity-planning-dashboard.streamlit.app/
+
+Use this hosted version for demos and grading. The local setup instructions below are mainly for development or offline experimentation.
+
 ## Project Overview
 
 This project simulates **Aurora Utensils Manufacturing (AUM)**, a mid-size stainless-steel utensils and kitchenware manufacturer, to build a comprehensive **forecasting and liquidity planning system**. We use a real utensil manufacturing sales dataset from Kaggle as Aurora's transaction history, supplemented with macroeconomic data from FRED and U.S. Census sources.
@@ -140,14 +148,28 @@ pip install -r requirements.txt
 
 ## Running the Dashboard
 
+You can either use the hosted Streamlit app or run the dashboard locally.
+
+### Option A – Use the hosted app (recommended for demo)
+
+1. Open the live app in your browser:
+   https://aum-revenue-liquidity-planning-dashboard.streamlit.app/
+2. Navigate using the top tabs:
+   - **Overview** – Key revenue and liquidity KPIs
+   - **Revenue Forecast** – 12-month forecast, scenarios, and download
+   - **Liquidity Risk** – Structural score, What‑If planner, and cash simulation
+
+### Option B – Run locally (development)
+
+From the project root:
+
 ```bash
 streamlit run app/dashboard.py
 ```
 
-The dashboard opens at http://localhost:8501 with three tabs:
+The app will open at http://localhost:8501.
 
-- **🏠 Overview** – Key metrics and combined revenue chart
-- **📈 Revenue Forecast** – 12-month forecast table, scenarios, and download
+Phase 8 planning features (What‑If sliders, cash buffer simulation, and scenario selectors) are available on the Revenue Forecast and Liquidity Risk tabs after you generate the Phase 5/6 artifacts.
 - **🎯 Liquidity Risk** – Structural analysis, What-If planner, and cash simulation
 
 **Phase 8 Planning:** After generating the Phase 5/6 artifacts, open the dashboard and experiment with What-If sliders on the Liquidity tab and scenario selectors on both Revenue and Liquidity tabs.
