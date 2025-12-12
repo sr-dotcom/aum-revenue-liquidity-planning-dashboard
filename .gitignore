@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project-specific
+# Large data files (included for grading - comment out if repo size is a concern)
+# data/raw/*.csv
+# data/external/*.csv
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+
+# Model artifacts (keep for grading)
+# models/*.pkl

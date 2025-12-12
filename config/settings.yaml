@@ -1,0 +1,180 @@
+# Aurora Utensils Manufacturing (AUM) - Project Configuration
+# =============================================================
+# This file contains all configuration settings for the project.
+# Update placeholder values after inspecting actual data files.
+
+# -----------------------------------------------------------------------------
+# DATA PATHS
+# -----------------------------------------------------------------------------
+# Paths are relative to project root.
+# Place downloaded files in the appropriate directories.
+
+data_paths:
+  # Core sales data from Kaggle utensil manufacturing dataset
+  sales_raw: "data/raw/utensil_sales.csv"
+  
+  # Macro/industry data from FRED
+  # User will download these CSVs from FRED and save with these names
+  macro_msi_raw: "data/external/mfg_shipments.csv"      # FRED series: AMTMVS
+  macro_ip_raw: "data/external/ipman.csv"               # FRED series: IPMAN
+  
+  # Optional: SEC financial data for ratio calibration
+  financial_ratios_raw: "data/external/manufacturing_sec_financials.csv"
+
+# -----------------------------------------------------------------------------
+# COLUMN MAPPINGS
+# -----------------------------------------------------------------------------
+# Column names from the UniTech Sales Data (utensil_sales.csv)
+# NOTE: Some column names have trailing spaces in the original data
+
+columns:
+  sales:
+    # Date column containing transaction dates (format: M/D/YYYY)
+    date: "Date of Order"
+    
+    # Product identifier column (product name/model)
+    product: "Model Name"
+    
+    # Region, customer, or market segment column
+    # Using State as primary region identifier
+    region_or_customer: "State"
+    
+    # Quantity sold column (units sold per transaction, range 0-231)
+    quantity: "sales"
+    
+    # Revenue/sales amount column
+    # NOTE: Dataset does not have explicit revenue column
+    # We will DERIVE revenue by multiplying quantity by assumed unit price
+    # This is documented in finance_assumptions.assumed_unit_price
+    revenue: "_derived_revenue"  # Will be computed as: quantity * assumed_unit_price
+    
+    # Additional useful columns from the dataset
+    store_code: "Store Code"
+    item_code: "Item Code"
+    district: "District"
+    country: "Country"
+    year: "Year"
+  
+  macro_msi:
+    # FRED CSV format: observation_date, AMTMVS
+    date: "observation_date"
+    value: "AMTMVS"
+  
+  macro_ip:
+    # FRED CSV format: observation_date, IPMAN
+    date: "observation_date"
+    ip_index: "IPMAN"
+
+# -----------------------------------------------------------------------------
+# FINANCE ASSUMPTIONS
+# -----------------------------------------------------------------------------
+# Initial working capital assumptions based on manufacturing industry benchmarks.
+# These values will be refined after analyzing SEC financial statement data.
+# 
+# Sources for benchmarks:
+# - Manufacturing industry averages from financial databases
+# - SEC 10-K filings from comparable companies (Lifetime Brands, Newell Brands)
+
+finance_assumptions:
+  # Assumed Unit Price (for deriving revenue from quantity)
+  # The dataset contains quantity (units sold) but not revenue
+  # We derive revenue as: quantity * assumed_unit_price
+  # This is a mid-range estimate for stainless steel utensils (in INR)
+  # Range: ₹100-₹500 per unit depending on product type
+  assumed_unit_price: 250.0
+  
+  # Days Sales Outstanding (DSO)
+  # Typical range for manufacturing: 30-60 days
+  # Represents average time to collect receivables
+  dso_days: 45
+  
+  # Days Payable Outstanding (DPO)
+  # Typical range for manufacturing: 30-45 days
+  # Represents average time to pay suppliers
+  dpo_days: 40
+  
+  # Days Inventory Outstanding (DIO)
+  # Typical range for manufacturing: 60-90 days
+  # Represents average time inventory is held
+  inventory_days: 60
+  
+  # Gross Margin Percentage
+  # Typical range for utensil manufacturing: 25-35%
+  # Used to estimate COGS from revenue
+  gross_margin_pct: 0.30
+  
+  # Operating Expense Ratio (as % of revenue)
+  # Estimated fixed operating costs
+  opex_ratio: 0.20
+  
+  # Fixed Cost Ratio (fraction of revenue for fixed operating costs)
+  # Used in liquidity score calculation
+  fixed_cost_ratio: 0.15
+  
+  # Working Capital Penalty Factor
+  # Penalty applied to high cash conversion cycles in liquidity score
+  wc_penalty: 0.2
+
+
+# -----------------------------------------------------------------------------
+# LIQUIDITY THRESHOLDS
+# -----------------------------------------------------------------------------
+# Thresholds for classifying liquidity risk levels.
+# These are initial assumptions and should be validated during modeling.
+
+liquidity_thresholds:
+  # Cash balance thresholds (as multiple of monthly operating expenses)
+  # Safe: cash >= 0 (positive balance)
+  # At_Risk: -0.2 <= cash < 0 (small negative)
+  # Critical: cash < -0.2 (significant shortfall)
+  safe_min_cash_multiple: 0.0
+  critical_min_cash_multiple: -0.2
+  
+  # Alternative ratio-based thresholds (for reference)
+  current_ratio:
+    safe_min: 1.5
+    at_risk_min: 1.0
+  quick_ratio:
+    safe_min: 1.0
+    at_risk_min: 0.5
+  cash_conversion_cycle:
+    safe_max_days: 60
+    critical_max_days: 90
+  
+  # Adjusted Liquidity Score thresholds (for Phase 6)
+  # Score = operating_cash_margin - (ccc_days / 365) * wc_penalty
+  safe_min_margin: 0.15       # score >= 0.15 → Safe
+  at_risk_min_margin: 0.05    # score in [0.05, 0.15) → At Risk, below 0.05 → Critical
+
+# -----------------------------------------------------------------------------
+# MODEL SETTINGS
+# -----------------------------------------------------------------------------
+
+models:
+  forecasting:
+    # Default forecast horizon in months
+    forecast_horizon: 12
+    
+    # Train/test split ratio
+    train_test_split: 0.8
+    
+    # Default model type
+    default_model: "sarima"
+  
+  liquidity_classification:
+    # Default classifier
+    default_model: "random_forest"
+    
+    # Risk level labels
+    risk_levels:
+      - "Safe"
+      - "At_Risk"
+      - "Critical"
+
+# -----------------------------------------------------------------------------
+# DASHBOARD SETTINGS
+# -----------------------------------------------------------------------------
+
+dashboard:
+  title: "Aurora Utensils Manufacturing - Liquidity & Forecasting Dashboard"
+  theme: "light"
